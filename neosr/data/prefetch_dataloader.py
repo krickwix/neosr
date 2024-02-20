@@ -100,3 +100,24 @@ class CUDAPrefetcher():
     def reset(self):
         self.loader = iter(self.ori_loader)
         self.preload()
+
+class CPUPrefetcher():
+    """CPU prefetcher.
+
+    Args:
+        loader: Dataloader.
+    """
+
+    def __init__(self, loader):
+        self.ori_loader = loader
+        self.loader = iter(loader)
+
+    def next(self):
+        try:
+            return next(self.loader)
+        except StopIteration:
+            return None
+
+    def reset(self):
+        self.loader = iter(self.ori_loader)
+

@@ -28,7 +28,8 @@ class EnlargedSampler(Sampler):
 
     def __iter__(self):
         # deterministically shuffle based on epoch
-        g = torch.Generator(device='cuda')
+        g = torch.Generator()
+#        g = torch.Generator(device='cuda')
         g.manual_seed(self.epoch)
         indices = torch.randperm(self.total_size, generator=g, device='cuda').tolist()
 

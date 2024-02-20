@@ -19,6 +19,8 @@ def init_dist(launcher, backend='nccl', **kwargs):
 
 
 def _init_dist_pytorch(backend, **kwargs):
+    if dist.is_initialized():
+        return
     rank = int(os.environ['RANK'])
     num_gpus = torch.cuda.device_count()
     torch.cuda.set_device(rank % num_gpus)

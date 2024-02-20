@@ -19,6 +19,8 @@ from neosr.utils import get_root_logger, imwrite, tensor2img
 from neosr.utils.dist_util import master_only
 from neosr.utils.registry import MODEL_REGISTRY
 
+import habana_frameworks.torch.gpu_migration
+
 
 @MODEL_REGISTRY.register()
 class default():

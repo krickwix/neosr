@@ -10,11 +10,13 @@ import torch
 from neosr.data import build_dataloader, build_dataset
 from neosr.data.data_sampler import EnlargedSampler
 from neosr.data.prefetch_dataloader import CUDAPrefetcher
+from neosr.data.prefetch_dataloader import CPUPrefetcher
 from neosr.models import build_model
 from neosr.utils import (AvgTimer, MessageLogger, check_resume, get_root_logger, get_time_str,
                          init_tb_logger, init_wandb_logger, make_exp_dirs, mkdir_and_rename, scandir)
 from neosr.utils.options import copy_opt_file, parse_options
 
+import habana_frameworks.torch.gpu_migration
 
 def init_tb_loggers(opt):
     # initialize wandb logger before tensorboard logger to allow proper sync
@@ -153,7 +155,8 @@ def train_pipeline(root_path):
 
     # dataloader prefetcher
 
-    prefetcher = CUDAPrefetcher(train_loader, opt)
+    # prefetcher = CUDAPrefetcher(train_loader, opt)
+    prefetcher = CPUPrefetcher(train_loader)
     logger.info('Using CUDA prefetch dataloader.')
 
     if opt['use_amp'] is True:
