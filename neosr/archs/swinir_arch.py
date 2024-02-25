@@ -66,7 +66,7 @@ def window_reverse(windows, window_size, h, w):
     x = x.permute(0, 1, 3, 2, 4, 5).contiguous().view(b, h, w, -1)
     return x
 
-
+#@torch.cuda.amp.custom_fwd(cast_inputs=torch.bfloat16)
 class WindowAttention(nn.Module):
     r""" Window based multi-head self attention (W-MSA) module with relative position bias.
     It supports both of shifted and non-shifted window.
@@ -136,9 +136,15 @@ class WindowAttention(nn.Module):
 
         if self.flash_attn is True:
             # flash attention
-            with torch.backends.cuda.sdp_kernel(enable_math=False):
-                x = torch.nn.functional.scaled_dot_product_attention(q, k, v, scale=self.scale, dropout_p=self.dropout_p)
-            x = x.transpose(1, 2).reshape(b_, n, c)
+            # NOTE: at time of writing, FlashAttention won't be enabled by SDPA
+            # unless fp16 or bf16 is casted, and attention_mask is None.
+            # The context manager might break graphs when using .compile(),
+            # solution seems to use it outside SDPA instead.
+
+            with torch.no_grad():
+                with torch.backends.cuda.sdp_kernel(enable_math=False):
+                    x = torch.nn.functional.scaled_dot_product_attention(q, k, v, scale=self.scale, dropout_p=self.dropout_p)
+                    x = x.transpose(1, 2).reshape(b_, n, c)
 
         else:
             q = q * self.scale
@@ -960,30 +966,6 @@ class swinir(nn.Module):
         flops += h * w * 3 * self.embed_dim * self.embed_dim
         flops += self.upsample.flops()
         return flops
-
-
-if __name__ == '__main__':
-    upscale = 4
-    window_size = 8
-    height = (1024 // upscale // window_size + 1) * window_size
-    width = (720 // upscale // window_size + 1) * window_size
-    model = swinir(
-        upscale=2,
-        img_size=(height, width),
-        window_size=window_size,
-        img_range=1.,
-        depths=[6, 6, 6, 6],
-        embed_dim=60,
-        num_heads=[6, 6, 6, 6],
-        mlp_ratio=2,
-        upsampler='pixelshuffledirect')
-    print(model)
-    print(height, width, model.flops() / 1e9)
-
-    x = torch.randn((1, 3, height, width))
-    x = model(x)
-    print(x.shape)
-
 
 @ARCH_REGISTRY.register()
 def swinir_small(**kwargs):

@@ -1,5 +1,5 @@
 
-name: train_cugan_otf
+name: train_hadn_otf
 model_type: otf
 scale: 4
 num_gpu: 1
@@ -84,7 +84,7 @@ path:
   #strict_load_g: false # do not uncomment, read docs
 
 network_g:
-  type: cugan
+  type: hadn
 
 network_d:
   type: unet
@@ -127,7 +127,7 @@ train:
   gan_opt:
     type: GANLoss
     gan_type: vanilla
-    loss_weight: 0.1
+    loss_weight: 0.05
   color_opt:
     type: colorloss
     loss_weight: 1.0
@@ -137,7 +137,7 @@ train:
   #  loss_weight: 1.0
   #ff_opt:
   #  type: focalfrequencyloss
-  #  loss_weight: 0.5
+  #  loss_weight: 0.25
 
 logger:
   print_freq: 100

@@ -1,5 +1,5 @@
 
-name: train_cugan_otf
+name: train_rgt_otf
 model_type: otf
 scale: 4
 num_gpu: 1
@@ -84,7 +84,8 @@ path:
   #strict_load_g: false # do not uncomment, read docs
 
 network_g:
-  type: cugan
+  type: rgt
+  #type: rgt_s
 
 network_d:
   type: unet

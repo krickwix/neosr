@@ -1,5 +1,5 @@
 
-name: train_cugan_otf
+name: train_safmn_otf
 model_type: otf
 scale: 4
 num_gpu: 1
@@ -84,7 +84,9 @@ path:
   #strict_load_g: false # do not uncomment, read docs
 
 network_g:
-  type: cugan
+  type: safmn
+  #type: safmn_l
+
 
 network_d:
   type: unet

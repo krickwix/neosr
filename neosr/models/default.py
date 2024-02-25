@@ -211,7 +211,7 @@ class default():
         if self.opt['bfloat16'] is True:
             amp_dtype = torch.bfloat16
         
-        scaler = torch.cuda.amp.GradScaler(enabled=use_amp, init_scale=2.**11)
+        scaler = torch.cuda.amp.GradScaler(enabled=use_amp, init_scale=2.**5)
 
         with torch.autocast(device_type='cuda', dtype=amp_dtype, enabled=use_amp):
             self.output = self.net_g(self.lq)
@@ -505,6 +505,7 @@ class default():
 
         if self.opt['compile'] is True:
             net = torch.compile(net)
+            # see option fullgraph=True
 
         if self.opt['dist']:
             find_unused_parameters = self.opt.get(
