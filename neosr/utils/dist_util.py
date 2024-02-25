@@ -17,13 +17,22 @@ def init_dist(launcher, backend='nccl', **kwargs):
     else:
         raise ValueError(f'Invalid launcher type: {launcher}')
 
-
+# import traceback
 def _init_dist_pytorch(backend, **kwargs):
-    rank = int(os.environ['RANK'])
-    num_gpus = torch.cuda.device_count()
-    torch.cuda.set_device(rank % num_gpus)
-    dist.init_process_group(backend=backend, **kwargs)
+    # print(f'>>>>> _init_dist_pytorch')
+    # traceback.print_stack()
 
+    if dist.is_initialized() == False:
+        print('_init_dist_pytorch: dist is NOT initialized')
+        rank = int(os.environ['RANK'])
+        num_gpus = torch.cuda.device_count()
+        torch.cuda.set_device(rank % num_gpus)
+        dist.init_process_group(backend=backend, **kwargs)
+        print(f'<<<<< _init_dist_pytorch: device={rank%num_gpus}')
+    # else:
+        # print('_init_dist_pytorch: dist is ALREADY initialized')
+        # print(f'<<<<< _init_dist_pytorch')
+        
 
 def _init_dist_slurm(backend, port=None):
     """Initialize slurm distributed training environment.
@@ -59,6 +68,7 @@ def _init_dist_slurm(backend, port=None):
 
 
 def get_dist_info():
+    # print(f'>>>>> get_dist_info')
     if dist.is_available():
         initialized = dist.is_initialized()
     else:
@@ -69,6 +79,7 @@ def get_dist_info():
     else:
         rank = 0
         world_size = 1
+    # print(f'<<<<< get_dist_info')
     return rank, world_size
 
 
