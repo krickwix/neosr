@@ -7,7 +7,7 @@ license = "Apache 2.0"
 readme = "readme.md"
 
 [tool.poetry.dependencies]
-python = "^3.11,<3.12"
+#python = "^3.11,<3.12"
 numpy = "^1.25.2"
 lmdb = "^1.4.1"
 einops = "^0.6.1"

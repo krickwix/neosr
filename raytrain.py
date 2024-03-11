@@ -261,6 +261,11 @@ def ray_train_pipeline (root_path, num_workers=2, use_gpu=True):
     print(f"Training result: {result}")
 
 if __name__ == '__main__':
+    import subprocess
+    import sys
+
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "git+https://github.com/krickwix/neosr.git"])
+
     ray.init()
     root_path = osp.abspath(osp.join(__file__, osp.pardir))
     ray_train_pipeline(root_path, num_workers=1, use_gpu=True)
